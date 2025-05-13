@@ -47,7 +47,8 @@ class UserService {
     const pass = dataToUpdate?.password;
 
     if(pass){
-      updateData.password = this.#hashPassword(pass)
+      const { hash, salt } = this.#hashPassword(pass);
+      updateData.password = `${salt}:${hash}`;
     }
 
     const updatedUser = userRepository.update(id, updateData)
@@ -65,7 +66,7 @@ class UserService {
 
   search(search) {
       if (!search?.email || !search?.password) {
-        return null;
+        throw Error("Email and password is required");
       }
 
       const user = this.#createDeepCopyJson(search);

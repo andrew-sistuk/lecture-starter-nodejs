@@ -17,12 +17,12 @@ const createUserValid = (req, res, next) => {
   const { email, phone, password, firstName, lastName } = body;
 
   if ("id" in body) {
-    res.err = { status: 400, message: "ID should not be present in request body" };
+    res.err = { message: "ID should not be present in request body" };
     return next();
   }
 
   if (!hasOnlyAllowedFields(body)) {
-    res.err = { status: 400, message: "Request contains unexpected fields" };
+    res.err = { message: "Request contains unexpected fields" };
     return next();
   }
 
@@ -33,7 +33,7 @@ const createUserValid = (req, res, next) => {
       isNotPhone(phone) ||
       isNotPassword(password)
   ) {
-    res.err = { status: 400, message: "User entity to create isn’t valid" };
+    res.err = { message: "User entity to create isn’t valid" };
     return next();
   }
 
@@ -45,17 +45,17 @@ const updateUserValid = (req, res, next) => {
   const body = req.body;
 
   if ("id" in body) {
-    res.err = { status: 400, message: "ID should not be present in request body" };
+    res.err = { message: "ID should not be present in request body" };
     return next();
   }
 
   if (!hasOnlyAllowedFields(body)) {
-    res.err = { status: 400, message: "Request contains unexpected fields" };
+    res.err = { message: "Request contains unexpected fields" };
     return next();
   }
 
   if (Object.keys(body).length === 0) {
-    res.err = { status: 400, message: "At least one field must be provided for update" };
+    res.err = { message: "At least one field must be provided for update" };
     return next();
   }
 
@@ -70,7 +70,7 @@ const updateUserValid = (req, res, next) => {
   for (const key of Object.keys(body)) {
     const isNotValid = validators[key]?.(body[key]);
     if (isNotValid) {
-      res.err = { status: 400, message: `Invalid value for field: ${key}` };
+      res.err = { message: `Invalid value for field: ${key}` };
       return next();
     }
   }

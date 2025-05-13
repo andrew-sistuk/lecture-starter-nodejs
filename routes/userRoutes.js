@@ -5,87 +5,57 @@ import {
   updateUserValid,
 } from "../middlewares/user.validation.middleware.js";
 import { responseMiddleware } from "../middlewares/response.middleware.js";
+import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 
 const router = Router();
 
 // TODO: Implement route controllers for user
-router.get("/", async (req, res, next) => {
-  try {
-    const users = await userService.getAll();
-    res.data = users;
-  } catch (err) {
-    res.err = err;
-  } finally {
-    next();
-  }
-}, responseMiddleware);
+router.get("/",  ctrlWrapper((req, res, _) => {
+    res.data = userService.getAll();
+    }), responseMiddleware);
 
-router.get("/:id", (req, res, next) => {
-  try {
+router.get("/:id", ctrlWrapper((req, res, _) => {
     const user = userService.getOne({ id: req.params.id });
     if (!user) {
       res.err = { message: "User not found" };
     } else {
       res.data = user;
     }
-  } catch (err) {
-    res.err = err;
-  } finally {
-    next();
-  }
-}, responseMiddleware);
+    }), responseMiddleware);
 
 router.post(
     "/",
     createUserValid,
-    (req, res, next) => {
-      try {
+    ctrlWrapper((req, res, next) => {
         if (res.err) {
           return next();
         }
-        const createdUser = userService.create(req.body);
-        res.data = createdUser;
-      } catch (err) {
-        res.err = err;
-      } finally {
-        next();
-      }
-    },
+        res.data = userService.create(req.body);
+    }),
     responseMiddleware
 );
 
 router.patch(
     "/:id",
     updateUserValid,
-    (req, res, next) => {
-      try {
+    ctrlWrapper((req, res, next) => {
         if (res.err) {
           return next();
         }
-        const updatedUser = userService.update(req.params.id, req.body);
-
-        res.data = updatedUser;
-      } catch (err) {
-        res.err = err;
-      } finally {
-        next();
-      }
-    },
+        res.data = userService.update(req.params.id, req.body);
+    }),
     responseMiddleware
 );
 
-router.delete("/:id", (req, res, next) => {
-  try {
+router.delete("/:id", ctrlWrapper((req, res, next) => {
     const user = userService.delete(req.params.id);
     if (!user) {
       res.err = { message: "Nothing to delete. User not found" };
     } else {
-      res.status(204).send();
+      res.data = {
+        message: "Deleted",
+      };
     }
-  } catch (err) {
-    res.err = err;
-    next();
-  }
-}, responseMiddleware);
+    }), responseMiddleware);
 
 export { router };
